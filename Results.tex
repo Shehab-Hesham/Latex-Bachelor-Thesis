@@ -1,0 +1,462 @@
+%{
+	Created by Shehab Hesham.
+%}
+
+\section{Simulation Results}
+
+\par Before any system is uploaded on designated hardware, a simulation phase needs to be implemented. A simulation phase is crucial because it allows developers to visualize the outputs of the design in response to various input scenarios and combinations. Testing is generally done in a bottom-up approach; that is, each basic module is tested separately first and checked for errors, updated if required, then a tester works their way up testing modules that instantiate the smaller modules, also updating if necessary until the top-most module is reached, tested, and updated as needed.  \newline
+\par This method is used in this thesis to ensure that all modules are working appropriately, as required. The bottom-up testing approach also simplifies the debugging process, as it ensures that the instantiated modules within your current module are correct; hence, narrowing down the error-prone scope to the current module's code.\newline
+
+\subsection{Frequency Divider}
+\par A DE10-Lite board contains 3 clocks: a 10MHz clock and 2 50MHz clocks. However, this does not mean a developer is limited to the hardware clocks' frequencies only. using flip-flops allows a developer to use numerous frequencies using the provided clock frequencies. \newline
+\par A Flip-Flop is a digital circuit able to store 1-bit information, a flip-flop has an output of 1 or 0 depending on the type of flip-flop and the input combination. The value of a flip-flop is updated with each clock signal, which is fed as input to the digital circuit. \newline
+\par D flip-flops can be used to achieve frequency division, each flip-flop can divide the frequency by 2. That is: if the design requires 5MHz, one flip-flop is needed after the 10MHz clock. Similarly, this thesis requires a frequency of 25 MHz due to the VGA limitations, so 1 D Flip-Flop is designed to take a 50 MHz clock input and toggle the output at each positive edge of the clock signal, creating a 25 MHz clock. \newline
+\par When comparing a 50 MHz clock to a 25 MHz clock, a 50 MHz clock is twice as fast as the 25 MHz clock. In other words, for every rising edge of the 25 MHz clock, two clock cycles of the 50 MHz clock execute. This means that the 50 MHz clock has a shorter period and a higher frequency than the 25 MHz clock. Consequently, in the same time interval, the 50 MHz clock will complete more clock cycles; however, some applications require slower clock frequencies for proper execution. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Freq Divider Results.png}
+    \caption{50MHz \& 25 MHz Clock Signals }
+    \label{fig:5025Res}  
+\end{figure}
+
+\par As seen above, the clock\_twenty\_five signal (lower signal) is half the speed of the clock signal (upper signal). This slowed-down clock\_twenty\_five signal allows the VGA Controller to operate correctly and according to standards. \newline
+\par Moreover, the 25 MHz clock is the main synchronization signal for the complete system. Although this slows down operation, but allows all modules to operate at the same speed, which will synchronize the system as a whole, allowing smooth real-time operation.\newline
+
+\subsection{Memory}
+\subsubsection{Addresses}
+%\par Table ~\ref{tab:tablepixelvalues} on page ~\pageref{tab:tablepixelvalues} shows a snippet of the expected values of each data bus at a given address value. \newline
+\par The address counter is the incremented counter writing the next pixel value to the memory block, the read address should be 1 less than the current address counter, as the module outputs a pixel value that has been written during the clock cycle before it while writing the next pixel value, to be read during the next clock cycle. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Output Addresses.png}
+    \caption{ Write Address Counter and Read Address Counter }
+    \label{fig:addressesOutput}  
+\end{figure}
+
+\par Please note that the first address (address 0) corresponds to 0 values in all color components (Red, Green, Blue). This is due to the fact that during the first clock cycle, the memory busses are being initialized at the same time the reading process is being executed. The read operation reads an empty bus value, 0, while the writing process writes the first bit of each layer 5D, 76, and 7B for each memory bus of Red, Green, and Blue, respectively. This means that for the first clock cycle, the output value can be disregarded \newline
+
+\subsubsection{Red Color Channel}
+\par As Table ~\ref{tab:tablepixelvalues} on page ~\pageref{tab:tablepixelvalues} suggests: the first 9 hexadecimal values in the Red memory array are: 5D 5E 62 67 63 64 64 60 65. This would mean that the first addresses to be output of this module are holding these values in the Red memory array. The simulation below shows the output values of the Red memory channel relative to the write address and the read (output) address during the active video region:
+ \newline
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Red Output.png}
+    \caption{ First 4 Output Pixel Values (Red) }
+    \label{fig:RedOutput}  
+\end{figure}
+
+\subsubsection{Green Color Channel}
+\par Table ~\ref{tab:tablepixelvalues} on page ~\pageref{tab:tablepixelvalues} also suggests that the first 9 hexadecimal values in the Green memory array are: 76 77 73 71 74 76 75 78 76. This would mean that the first addresses to be output of this module are holding these values. The simulation below shows the output values of the Green memory channel relative to the write address and the read (output) address during the active video region:
+ \newline
+
+ \begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Green Output.png}
+    \caption{ First 4 Output Pixel Values (Green) }
+    \label{fig:GreenOutput}  
+\end{figure}
+
+\subsubsection{Blue Color Channel}
+\par As Table ~\ref{tab:tablepixelvalues} on page ~\pageref{tab:tablepixelvalues} suggests, the first 9 hexadecimal values in the Blue memory array are: 7B 7C 7B 7A 7B 7A 7C 7C 7E. This would mean that the first addresses to be output of this module are holding these values. The table below shows the output values of the Blue memory channel relative to the write address and the read (output) address during the active video region:
+ \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Blue Output.png}
+    \caption{ First 4 Output Pixel Values (Blue) }
+    \label{fig:BlueOutput}  
+\end{figure} 
+
+\subsubsection{Blanking Region}
+\par As previously elaborated, VGA standards require that after 640 image pixels, a blanking period should follow. A blanking period consists of a number of black pixels sent as output to the monitor, black pixel values correspond to a value of 0. \newline
+\par Therefore, all three color channels should stop reading the hexadecimal values of the image and saving them into the memory array. Instead, the array should hold values of 0. \newline
+\par The figure below shows the cycle the active region ending, requiring the system to stop saving the image into the three memory arrays and padding them with 0 values: \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{SRAM start of blank.png}
+	\caption{End of first active region and start of first blanking region.}
+	\label{fig:sramendactive}  
+\end{figure} 
+
+\par The figure below shows the cycle the blanking region ending, allowing a new row of pixels to be saved in the memory: \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{SRAM end of blank.png}
+	\caption{End of first blanking region and start of second active region.}
+	\label{fig:sramendblank}  
+\end{figure} 
+
+\par Whether in active or blanking region, the module will output 8 bits by 8 bits to the image processing module for manipulation. \newline
+
+\subsection{Image Processing}
+\subsubsection{Original Image}
+\par When the DE10-Lite board switches are all off, representing the number 0, the image processing module acts as a buffer, it dies nothing. This option corresponds to an off system. \newline
+\par The output from this module should follow the input exactly, except with an additional delay of one clock cycle. In the figure below the Red, Green, and Blue outputs follow the respective color layer input from the clock cycle above. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{original ip.png}
+	\caption{Input and output image data with no image processing performed.}
+	\label{fig:iporiginal}  
+\end{figure}
+
+\subsubsection{Brightness Addition}
+\par This thesis aims to add a fixed value to each pixel of an image color channel. This means, that each pixel in each color channel should have a certain value added to it. \newline
+\par This would mean that wanting to add a hexadecimal value of 64 (decimal 100) to an image would require a hexadecimal 64 to be added to the Red, Green, and Blue color channel pixels. \newline
+\par The figure below shows the three color channel inputs and the corresponding brighter outputs. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP brightness.png}
+	\caption{Brightness addition to all color channels.}
+	\label{fig:ipaddbrightness}  
+\end{figure}
+
+\par When performing brightness addition, there is a risk of value overflow. To avoid exceeding the specified maximum pixel value, decimal 255, a conditional assignment should be implemented. If a pixel value is expected to exceed the maximum value, the pixel's value should be clipped at hexadecimal FF, which corresponds to decimal 255. Pixels that have a value greater than the hexadecimal 9B, a decimal of 155, are expected to overflow and should be clipped accordingly. The figure below demonstrates one of the events where clipping is necessary. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP brightness special case.png}
+	\caption{Overflow at blue color channel causing clipping to 0xFF.}
+	\label{fig:ipaddbrightnesscase}  
+\end{figure}
+
+\subsubsection{Brightness Subtraction}
+\par Similar to brightness addition, brightness subtraction is a point operation based image processing technique that is useful for hiding unwanted information and features in an image. In order to subtract brightness from an image, a certain value should be subtracted from each pixel value in each color layer.  \newline
+\par This would mean that wanting to subtract a hexadecimal value of 64 (decimal 100) from an image would require a hexadecimal 64 to be subtracted from the Red, Green, and Blue color channel pixels. \newline
+\par The figure below shows the three color channel inputs and the corresponding darker outputs. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP sub brightness.png}
+	\caption{Brightness subtraction in all color channels.}
+	\label{fig:ipsubbrightness}  
+\end{figure}
+
+\par When performing brightness subtraction, there is a risk of value underflow. To avoid going below the specified minimum pixel value, decimal 0, a conditional assignment should be implemented. If a pixel value is expected to hold a value less than the minimum value, the pixel's value should be clipped at hexadecimal 00, which corresponds to decimal 0. Pixels that have a value less than the hexadecimal 64, a decimal of 100, are expected to underflow and should be clipped accordingly. The figure below demonstrates one of the events where clipping is necessary. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP sub special case.png}
+	\caption{Underflow at red and blue color channels causing clipping to 0x00.}
+	\label{fig:ipsubbrightnesscase}  
+\end{figure}
+
+\subsubsection{Threshold Operation}
+\par There are many techniques to perform threshold operation, easiest of which is the classical threshold operation. Threshold operation is done by setting a certain value, threshold, that will have all other pixel values compared to. This thesis uses one global threshold value for the different color channels, decimal 127 (0x7F). \newline
+\par Similar to other point operations, all pixel values should be considered and manipulated individually, regardless of the surrounding pixel values. \newline
+\par The figure below shows the output color channels compared to the input color channels. Any value below 127 (0x7F) is set to 0 (0x00) and otherwise set to 255 (0xFF). \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP threshold.png}
+	\caption{Threshold forces any value below 0x7F to 0x00 and 0xFF otherwise.}
+	\label{fig:ipthreshold}  
+\end{figure}
+
+\subsubsection{Inversion Operation}
+\par Image inversion is another point operation that manipulates each pixel in all three color channels. Image inversion subtracts the pixel's value from the maximum pixel value. Inversion causes bright image sections to darken and dark image regions to brighten. \newline
+\par The figure below shows that each pixel in each color channel is inverted. This is done by subtracting the current pixel value from decimal 255 (0xFF) and assigning the subtraction result to the corresponding output pixel. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP inversion.png}
+	\caption{Inversion subtracts current pixel value from 0xFF.}
+	\label{fig:ipinversion}  
+\end{figure}
+
+\subsubsection{Blanking Region}
+\par Regardless of which image processing technique the system is set, in the blanking region of the VGA protocol should produce values of 0 t0 all color channels. \newline
+\par  When the module detects that the video on signal goes low, the system stops the image processing algorithm and assigns a value of 0 to all three color channels. The figure below shows that when the Red, Blue, and Green color channels all transmit 0s once the active region is over. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP blank start.png}
+	\caption{End of active region and start image processing algorithm stopping.}
+	\label{fig:ipstartblank}  
+\end{figure}
+
+\par The module should continue the image processing technique set at the start of the program once the blanking region is over and the following active region starts. The figure below shows the continuation of the image processing algorithm when an active region starts. \newline 
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{IP blank end.png}
+	\caption{Start of image processing algorithm after banking region.}
+	\label{fig:ipendblank}  
+\end{figure}
+
+\subsection{VGA Controller}
+\par The VGA controller, as described in the methodology section, is responsible for producing the Red, Green, and Blue components of an image according to VGA standards, alongside a Vertical Synchronization signal and a Horizontal Synchronization signal. The figure below briefly describes how the controller indicates when the pixels are being displayed and when the synchronization signals are being transmitted. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{VGA Controller Whiteboard.png}
+    \caption{ VGA Controller Functionality }
+    \label{fig:VGAWB}  
+\end{figure}
+
+\par The VGA controller contains 2 sub-sections: namely, a vertical counter and a horizontal counter. The vertical counter is responsible for keeping track of the y position, vertical position, of each pixel in a frame, while the horizontal counter is responsible for the x position, the horizontal position, of each pixel in a frame.  \newline
+
+\subsubsection{Vertical Counter}
+
+\par The Vertical Counter section counts up from 0 to 524 for each frame, the 525 counts represent pixels that are divided into: 
+\begin{itemize}
+    \item Vertical Display: 480,
+    \item Vertical Front Porch: 10,
+    \item Vertical Sync Pulse: 2,
+    \item Vertical Back Porch: 33.
+\end{itemize}
+
+\par What is expected in simulation is the following: for each rising edge of the clock, the pixel register and y coordinate should increment only if the enable signal is high. When the pixel register is 524, the next value it should hold is 0. Also, the register called next\_pixel\_register should start at one and increase until it reaches 524, the signal should always have a value greater than the pixel\_register by 1. \newline
+\par The enable signal is the x is done flag signal coming from the horizontal counter section. The x is done signal is high when the horizontal counter completes 800 counts. In the below figure, the vertical counter increments each time the x is done is high. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{vertical signals.png}
+    \caption{ Y Register Coordinate Incriminating each time x is done.}
+    \label{fig:VSigs}  
+\end{figure}
+
+\par The neg\_reset signal is an active low reset signal, one should expect that at the instant the reset button is pressed, the pixel\_register should go back to 0 and the next\_pixel\_register should be 1. \newline
+
+\par The remaining signal that needs inspection is the y\_is\_done signal, this signal indicates that the full frame has been successfully displayed. This signal should turn to high (1) when the pixel\_register gets the value of 524, which also means that the pixel\_register should turn to 0 after the finishing flag is raised by 1 clock cycle. In the below figure, one can see that the expected outcome is the actual outcome. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{vertical done.png}
+    \caption{ Y Register Coordinate Resetting when Finish Flag is Raised }
+    \label{fig:VdoneFlag}  
+\end{figure}
+
+\subsubsection{Horizontal Counter}
+\par The Horizontal Counter section counts up from 0 to 799 for each frame, the 800 counts represent pixels that are divided into: 
+\begin{itemize}
+    \item Horizontal Display: 640,
+    \item Horizontal Front Porch: 16,
+    \item Horizontal Sync Pulse: 96,
+    \item Horizontal Back Porch: 48.
+\end{itemize}
+
+\par What is expected in simulation is the following: for each rising edge of the clock, the pixel register and x coordinate (x\_pixels) should increment. When the pixel register is 799, the next value it should hold is 0. Also, the register called next\_pixel\_register should start at one and increase until it reaches 799, the signal should always have a value greater than the pixel\_register by 1. In the below figure, one can see that the expected outcome is the actual outcome. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Horizontal Signals.png}
+    \caption{ X Register Coordinate Incriminating with each Clock Cycle. }
+    \label{fig:HSigs}  
+\end{figure}
+
+\par The neg\_reset signal is an active low reset signal, one should expect that at the instant the reset button is pressed, the pixel\_register should go back to 0 and the next\_pixel\_register should be 1. \newline
+
+\par The remaining signal that needs inspection is the x\_is\_done signal, this signal indicates that the full frame has been successfully displayed. This signal should turn to high (1) when the pixel\_register gets the value of 800, which also means that the pixel\_register should turn to 0 after the finishing flag is raised by 1 clock cycle. In the below figure, one can see that the expected outcome is the actual outcome. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Horizontal Done.png}
+    \caption{ X Register Coordinate Resetting when Finish Flag is Raised. }
+    \label{fig:HDone}  
+\end{figure}
+
+\subsubsection{VGA Controller Top Module}
+\par As described in figure ~\ref{fig:VGAWB} on page ~\pageref{fig:VGAWB}, the Video Graphics Array Controller design relies on the previously mentioned Vertical Counter section and the Horizontal Counter section, also discussed above. \newline
+\par The main signals in the VGA Controller are the synchronization signals, the horizontal synchronization and the vertical synchronization. \newline
+\par The horizontal synchronization signal is an active low signal that indicates that a row of pixels has been displayed. The horizontal synchronization signal is low (active) when the horizontal active region and the horizontal front porch regions are over. The signal stays active - low - for 96 pixels before being followed by a horizontal back porch for 48 pixels.  \newline
+\par The figure below shows the moment the horizontal synchronization signal goes active after the active region and the horizontal front porch. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{HSYNC start.png}
+	\caption{ Start of HSYNC after active region (640) and front porch (16).  }
+	\label{fig:HSYNCStart}  
+\end{figure}
+
+\par The following figure shows the end of the horizontal synchronization signal, followed by a back porch in the blanking region. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{HSYNC end.png}
+	\caption{ End of HSYNC after active region (640), front porch (16), and pulse (96). }
+	\label{fig:HSYNCEnd}  
+\end{figure}
+
+\par The vertical synchronization pulse is also an active low signal that indicates that the complete frame has been displayed. The vertical synchronization signal is low when the vertical active region and the vertical front porch regions are completed. The signal stays active - low - for 2 pixels before being followed by a vertical back porch lasting 33 pixels. \newline
+\par The figure below shows the moment the vertical synchronization signal goes active after the vertical active region and front porch. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{VSYNC start.png}
+	\caption{ Start of VSYNC after active region (480) and front porch (10). }
+	\label{fig:VSYNCStart}  
+\end{figure}
+
+\par The following figure shows the end of the vertical synchronization signal, followed by a back porch in the blanking region. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{VSYNC end.png}
+	\caption{ End of VSYNC after active region (480), front porch (10), and pulse (2). }
+	\label{fig:VSYNCEnd}  
+\end{figure}
+
+\subsection{8 Bit to 4 Bit Converter}
+\par As discussed in the methodology section, the hardware is limited by a 4-bit Digital-to-Analog Converter (DAC) connected to the color channel outputs of the VGA. \newline
+\par This requires an additional module to be designed. A module that takes as input the three color channels that consist of 8 bits each for every pixel and outputs the color channels represented by 4 bits only.  \newline
+\par The figure below shows the color channel outputs and their respective clipped outputs that are tailored specifically for the board's hardware. This design ignores the least significant bits and only considers the 4 most significant bits.  \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{8to4.png}
+	\caption{ Clipping of color channels resulting in 4 bit outputs }
+	\label{fig:eightfourconv}  
+\end{figure}
+
+\section{Hardware Results}
+
+\subsection{Image Processing Algorithms}
+\par Some test images are considered to test the image processing module. The output images are compared to the input images to test the functionality of the image processing algorithm, as well as observing if the manipulated images meet the design objectives. \newline
+
+\subsubsection{Image Brightness Addition}
+\par The following image was captured by NASA's James Webb Space Telescope. This protostar is a hot, puffy clump of gas that’s only a fraction of the mass of our Sun. As it draws material in, its core will compress, get hotter, and eventually begin nuclear fusion — creating a star. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{52504158265_8322601464_o.png}
+	\caption{ Hourglass as New Star Forms - James Webb Telescope (original) \cite{jwbbrighter} }
+	\label{fig:resultsjwbbrighten}  
+\end{figure}
+
+\par Hidden in the neck of this “hourglass” of light are the very beginnings of a new star — a protostar. The clouds of dust and gas within this region are only visible in infrared light, the wavelengths that Webb specializes in. The dust and gas clusters are brighter than the protostar; masking the visibility. It is better to increase the brightness of the image, to have a brighter vision of the newly born star. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{brightened.png}
+	\caption{ Hourglass as New Star Forms - James Webb Telescope (Added Brightness) \cite{jwbbrighter} }
+	\label{fig:resultsjwbbrightened}  
+\end{figure}
+
+\subsubsection{Image Brightness Subtraction}
+\par The following image was captured by NASA's James Webb Space Telescope. In this image of dwarf galaxy Wolf-Lundmark-Melotte (WLM), the Webb telescope demonstrates its remarkable ability to resolve faint stars outside the Milky Way. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{52489012875_756ea623e9_o.jpg}
+	\caption{ WLM Dwarf Galaxy - James Webb Telescope (Original) \cite{jwbdarker} }
+	\label{fig:resultsjwbdarken}  
+\end{figure}
+
+\par One prominent galaxy is a pale yellow spiral in the top left corner of the image. Another defining feature is a large white star with long diffraction spikes, seen just to the right of the top center. However, some other galaxies are present in the picture, but masked by the light emitted by other galaxies; to solve this conflict and make the smaller, less clear galaxies visible, the image should be darkened, brightness subtraction is required. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{darker.jpg}
+	\caption{ WLM Dwarf Galaxy - James Webb Telescope (Subtracted Brightness) }
+	\label{fig:resultsjwbdarkened}  
+\end{figure}
+
+\par The darkened image has dimmed the light emitted by the bigger galaxies and eliminated the visibility of the smaller stars with diffraction spikes, allowing scientist and interested personnel to detect the smaller galaxies in this image. \newline
+
+\subsubsection{Image Threshold Operation}
+\par News reports show that drones have gotten more common, cheaper, and easier to build by anyone with a minimum technical knowledge. At the same time, adversaries get more insidious with hacking of cheap drones for nefarious purposes, which is why security measures and Counter-Unmanned Aircraft Systems (CUAS) need to evolve even faster. The early detection of drones is vital, as it provides the soldier time to seek cover or activate counter measures quickly. \newline
+\par The following image shows a drone which is fairly visible, this is not always the case, but this image is used for clarification purposes. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{Drone+detection-16-19.jpg}
+	\caption{ Drone Nearby (Original) \cite{SquareheadTechnology} }
+	\label{fig:resultsdrone}  
+\end{figure}
+
+\par The below image has passed through the image thresholding operation with a threshold of 127. The image has clarified the body of the drone, making visibility clearer and giving the security authorities a head-start and time to act appropriately.  \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{threshold_drone.jpg}
+	\caption{ Drone Nearby (Threshold Operation) }
+	\label{fig:resultsdronethresh}  
+\end{figure}
+
+\subsubsection{Image Inversion Operation}
+\par During the start of 1610, Galileo Galilei set his telescope towards the sky, started exploring, and documented his 5 most dominant discoveries about the moon and starts. \newline
+\par Until this day, scientists at research facilities are still exploring the vast and endless possibilities that exist beyond our planet, our solar system, and even beyond our own galaxy. One of the biggest and most promising researches is the exploration of Mars. \newline
+\par The scientist working on the Mars mission mainly depend on images captured by the Mars Rover to analyze land deviations and cracks to detect signs of life and water. One of the many images taken by the rover is shown below. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{mars_land.jpg}
+	\caption{ Water on Mars (original) \cite{marsrover} }
+	\label{fig:resultsmars}  
+\end{figure}
+
+\par The image above, if considered in the original format, gives little to no information for the scientists studying this image. However, image inversion provides more information as seen in the figure below. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{mars_inv.jpg}
+	\caption{ Water on Mars (Inverted) \cite{marsrover} }
+	\label{fig:resultsmarsinv}  
+\end{figure}
+
+\par In the above image, inversion is useful in identifying and studying various land-forms such as small, flat-topped buttes that are hypothesized to be inverted impact craters or water bodies. Inversion can also be used to study the topography and gravity data of Mars’s interior. \newline
+
+\subsection{VGA Oscilloscope Outputs}
+\par The VGA Controller produces 5 output signals of interest; Red, Green, Blue, Vertical Synchronization, and Horizontal Synchronization. \newline
+\par The signals given as input to the VGA Controller are converted from digital to analog by an R-2R Digital-to-Analog converter, this ensures the proper functionality of the VGA Controller. Th VGA Controller outputs the above mentioned signals as analog voltage signals. \newline
+
+\subsubsection{HSYNC}
+\par The Horizontal Synchronization pulse indicates that a complete row has been displayed. This signal is a short pulse lasting 96 clock cycles, and is - ideally - a square pulse. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{osc_hsync.jpeg}
+	\caption{ Horizontal Synchronization Pulses on Oscilloscope (shortened) }
+	\label{fig:oschsync}  
+\end{figure}
+
+\par The Horizontal Synchronization Signal is active low, as shown in the above figure. The signal should be smooth in the high and in low phases; however, the visible vibrations and oscillations are caused by the noise in one, two, or all of the following: the VGA port output, the oscilloscope, or the probe connecting the VGA port to the oscilloscope. \newline
+
+\subsubsection{VSYNC}
+\par The Vertical Synchronization pulse indicates that a complete frame has been displayed. This signal is a short pulse lasting 2 clock cycles, and is - ideally - a square pulse. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{osc_vsync.jpeg}
+	\caption{ Vertical Synchronization Pulse on Oscilloscope (lengthened) }
+	\label{fig:oscvsync}  
+\end{figure}
+
+\par The Vertical Synchronization Signal is active low, as shown in the above figure. The signal should be smooth in the high and in low phases; however, the visible vibrations and oscillations are caused by the noise in one, two, or all of the following: the VGA port output, the oscilloscope, or the probe connecting the VGA port to the oscilloscope. \newline
+\par The following figure shows that the Vertical Synchronization Signal occurs every frame being completely displayed. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{osc_manyvsync.jpeg}
+	\caption{ Vertical Synchronization Pulses Repeating on Oscilloscope }
+	\label{fig:oscmanyvsync}  
+\end{figure}
+
+\begin{comment}
+	\subsubsection{Color Channel}
+	\par This system has 3 color channel outputs; red, green, and blue. All three color channels have similar behavior, when observed on an oscilloscope. Therefore, only the red color channel is shown. \newline
+	\par The colors are only active during the active region of the VGA frame, which is when the horizontal counter is less than 640 and the vertical counter is less than 480. Although the vertical and horizontal counters are not visible on the oscilloscope, the horizontal synchronization signal can be used as reference. \newline
+	\par The active region of the VGA frame is characterized by a high horizontal synchronization signal throughout the whole frame; therefore, the red color channel output signal is observed with respect to the Horizontal Synchronization pulse, in order to determine the correct functionality of the VGA controller. \newline
+	\par The color channel takes most of the horizontal synchronization active region pulse, the rest belongs to the blanking region's horizontal front porch and horizontal back porch; which consist of 16 and 48 clock cycles, respectively. \newline
+	\par During the blanking region, that consists of the front porch, synchronization pulse, and the back porch, the color channels are forced to 0. Although this is not what is visible in the oscilloscope figure above, this is only due to the present, interfering noise. The visible vibrations and oscillations are caused by the noise in one, two, or all of the following: the VGA port output, the oscilloscope, or the probe connecting the VGA port to the oscilloscope. \newline
+	
+\end{comment}
+\subsection{Monitor VGA Display}
+\par Due to the fact that the VGA port is 4 bits only, the bit depth of each color channel is limited to 4, only allowing 16 different grades of color. \newline
+\par However, the 16 different possible colors are generally on the darker side of the color gradient; therefore, the output seems relatively dark and hardly detectable to the naked eye, causing the image details to be completely lost. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{black out screen.jpeg}
+	\caption{ Limited Bit Depth Cause Mostly Dark Image (Image brightened to show difference in values) }
+	\label{fig:screenblack}  
+\end{figure}
+
+%\end{document}
