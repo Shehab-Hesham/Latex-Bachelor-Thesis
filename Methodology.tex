@@ -1,0 +1,632 @@
+%{
+	Created by Shehab Hesham.
+%}
+
+\section{Hardware Setup}
+\par For this thesis, Terasic's DE10-Lite board will be the main component in our system. The board has features that allow the implementation of various circuit designs. The hardware on the board includes: \begin{itemize}
+    \item Altera MAX 10 10M50DAF484C7G FPGA
+    \item 1,638 Kbits M9K Memory
+    \item 50,000 programmable logic elements
+    \item Analog to Digital Converters
+    \item 5,888 Kbits Flash Memory
+    \item 144 (18 x 18) Multipliers
+    \item 4 Phase Locked Loops (PLLs)
+\end{itemize} 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Screenshot 2023-10-25 195747.png}
+    \caption{DE10-Lite Development Board \cite{figfour}}
+    \label{fig:boardFeatures}  
+\end{figure}
+\par A MAX10 FPGA is used on this development board, specifically the 10M50DAF484C7G FPGA model. This FPGA provides input/output capabilities, memory blocks, and various programmable logic resources.\newline
+\par There are two types of memory elements provided on the board: SDRAM and On-chip Memory. The SDRAM is an IS42/45S16320D fully synchronous SDRAM that is designed to function on the positive edge of the clock. For faster information retrieval, the M9K memory blocks that are integrated into the MAX10 FPGA can be used; however, the memory is limited. \newline
+\par More features that can be found on the board include a USB Blaster for programming, General Purpose Input and Output Ports to interface and connect different devices (sensors and actuators), two push buttons, ten light emitting diodes (LEDs), a 4-bit video graphics array (VGA) output, an audio jack that enables audio inputs and outputs, and headers that enable expandability, allowing for the connection of more boards and devices to the DE10-Lite board. \newline
+\par The DE10-Lite board will be programmed in Verilog HDL, and the code will be burned through the USB Blaster provided on the chip. Hardware Description Languages are used to describe hardware circuitry on a Field Programmable Gate Array, in this case, an Altera - Intel - Max10 Field Programmable Gate Array.\newline
+
+\subsection{Hardware Connection}
+\par The DE10-Lite board by Terasic has a built in VGA output port, so no external hardware is required to be added to the development board.  \newline
+\par The development board is connected to a personal computer (PC) for burning the code and for power, this is done through a USB type A to USB type B. \newline
+\par The USB type A is connected to the PC's USB port as shown in the figure below. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{hardware_usb.jpg}
+	\caption{USB A connected to PC}
+	\label{fig:hardwarePC}  
+\end{figure}
+
+\par The USB type B is connected to the PC's USB port as shown in the figure below. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{hardware_board.jpg}
+	\caption{USB B connected to DE10-Lite development board}
+	\label{fig:hardwareDE}  
+\end{figure}
+
+\par In the above figure, it is also shown that the VGA port of the DE10-Lite board is connected to the VGA cable that is used to transmit the 5 signals required to operate a VGA monitor; namely, Rd, Green, Blue, Horizontal Synchronization, and Vertical Synchronization. \newline
+\par The figure below shows the VGA cable connected to a VGA to HDMI converter. This can be disregarded if a monitor that supports VGA protocol is available, which is not the case for this thesis. The HDMI cable is then directly connected to the screen. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{hardware_vgahdmi.jpg}
+	\caption{VGA Cable connected to a VGA to HDMI Converter}
+	\label{fig:hardwareVGAHDMI}  
+\end{figure}
+
+\section{Software Setup}
+\par For this thesis, two software programs are majorly used to design the system. Quartus Prime lite by Intel's Altera is used to implement the desired design. For simulations and validation, Intel's Altera provides Modelsim to simulate the designed modules using a test bench. \newline
+\par Quartus Prime and ModelSim are powerful software tools used in the development and validation of the system in this thesis. Quartus Prime provides a user-friendly design environment with templates and development modules, while ModelSim offers a comprehensive simulation and testing platform. The compatibility between Quartus Prime 17.0 and ModelSim 17.0 ensures a smooth design and simulation experience, allowing for accurate verification of the image library implementation on the DE10-Lite board. \newline
+\subsection{Quartus Prime}
+\par Quartus Prime, formerly known as Quartus II, is a design tool provided by Intel that supports hardware description languages such as Verilog HDL and VHDL. Quartus Prime offers a user-friendly interface and a variety of tools, with its comprehensive features and capabilities, that guide a designer in the development process. \newline 
+\par One of the many advantages of Quartus Prime is that it provides many templates and specific FPGA development modules and examples for their different FPGA series that help users have a basic understanding of the features, inputs, and outputs of each FPGA. This user-friendly application has a wide, free, online support community and is being regularly and frequently updated; however, this design is based on the Quartus Prime Lite 17.0 version, as the MAX10 FPGA and the DE10-Lite board are highly supported and templates provided by Terasic - the board developer - are compatible with the Quartus Prime 17.0 version. By using the resources appropriately, designers can accelerate the development process and ensure that the design is compatible with the available FPGA. \newline
+\par Quartus Prime offers different design options for ease of use. Intel offers designers the option to implement their designs using Hardware Descriptive Languages or schematic captures, along with place and route tools that help optimize the designs. \newline
+\par Benefiting from Intel's popularity amongst end-users and developers, Altera's Quartus Prime enjoys an active support community, where many developers are active and help each other in their designs. For the purpose of this thesis, the design is based on Quartus Prime Lite 17.0 version, as it aligns well with the MAX10 FPGA and the DE10-Lite board. Additionally, the templates provided by Terasic, the board developer, are compatible with Quartus Prime 17.0. \newline
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Quartus Prime empty.png}
+    \caption{Quartus Prime Layout}
+    \label{fig:EmptyQuartusPrime}  
+\end{figure}
+
+\subsection{Modelsim}
+\par ModelSim is Intel's program that is designed to handle hardware descriptive language-based simulation and testing. It serves as a comprehensive environment for verifying and validating FPGA designs. Not only can one use ModelSim for simulation, but one can also use the built-in editor to apply necessary changes to one's design. Similar to Quartus Prime, ModelSim is widely supported online and is being continuously updated in parallel with Quartus Prime. For each Quartus Prime release, one can find a compatible ModelSim version. For this thesis, ModelSim 17.0 will be the main simulation tool that will be used to verify and test the different designed modules using specially designed test benches to verify the accuracy and speed of the designed program. ModelSim supports popular hardware description languages like Verilog HDL and VHDL, allowing designers to simulate their designs and evaluate their functionality. \newline
+\par ModelSim provides a variety of features that facilitate the simulation process. Designers can create test benches to stimulate their designed modules and to observe the resulting behavior. ModelSim offers a graphical interface where waveforms can be visualized to enable users to debug and analyze the functionality of the design accurately.  \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Modelsim empty.png}
+    \caption{Modelsim Layout}
+    \label{fig:EmptyModelsim}  
+\end{figure}
+
+\section{Images Description}
+\par All images used in this thesis are of size 640 * 480,  the images are also in the RGB color space. \newline
+
+\subsection{Size}
+\par  For simplicity, each image pixel is represented by 8 bits for each color layer: 8 bits for Red, 8 bits for Green, and 8 bits for Blue, this means that each pixel is represented by 24 bits, divided as mentioned above. \newline
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{image.jpg}
+    \caption{Random 640*480 Image from Google \cite{figfive}}
+    \label{fig:640480image}  
+\end{figure}
+\begin{math}
+    640 * 480 = 307,200             
+\end{math}
+
+\begin{math}
+    3 * 307200 = 921,600            
+\end{math}
+
+\par each pixel is 24 bits: \newline
+
+\begin{math}
+    921,600 * 24 = 22,118,400       
+\end{math}
+\newline
+
+\par This will produce a size of 307,200 pixels per layer (color), and 921,600 in total. The 921,600 pixels that produce the image will require 22,118,400 bits to be stored in. For this reason, only one image is stored in the FPGA at any given moment.  \newline
+
+\subsection{Format}
+\par Common image formats include jpg, jpeg, and png; however, Verilog can not handle and manipulate any of those extensions. For this reason, the images are converted into hexadecimal file format (.hex). For the time being, the images are being manually inserted into a Python script that acts as a converter and fed as 3 .hex files to the system, one hexadecimal file for each color layer. Converting an image to a .hex file comprises of converting each pixel value to a corresponding hexadecimal number.\newline
+
+\subsubsection{Image to HEX converter}
+\par The converter is a Python program that is designed using OpenCV's CV2 library. The program takes an RGB image as input. If the image is empty, the program stops and warns the user, if the image is correct, the algorithm proceeds to the next steps. The program proceeds to calculate the image dimensions that will be used to loop through the pixels; in this thesis, the size is fixed to 640*480; namely, 640 pixels height and 480 pixels width. \newline
+\par After determining the size of the image, the program loops through each pixel in all rows and columns. Throughout the loop, the program determines each pixel's value, this includes all three layers: Red, Green, and Blue. The values are separated from each other and added into three different .hex files: one for Red pixels, one for Green pixels, and one for Blue pixels. Each pixel is represented by 6 hexadecimal digits (24 bits), 2 hexadecimal numbers represent each layer of color, as shown in the algorithm below: \newline
+
+\begin{algorithm}[H]
+	\caption{Convert Image to Hex \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\Require
+		\Statex \textbf{Input:} \textit{image\_path} (path to the image file)
+		\Ensure
+		\Statex \textbf{Output:} Hexadecimal files for R, G, and B channels
+		\Statex
+		
+		\Function{ImageToHex}{\textit{image\_path}}
+		\State \textit{img} $\gets$ \Call{ReadImage}{\textit{image\_path}}
+		\If{\textit{img} is None}
+		\State \Call{Print}{``Error: Unable to read the image.''}
+		\State \Return
+		\EndIf
+		
+		\State \textit{img} $\gets$ \Call{ConvertToRGB}{\textit{img}}
+		\State \textit{height, width} $\gets$ \Call{GetDimensions}{\textit{img}}
+		
+		\State \Call{CreateOutputFiles}{\textit{file\_r, file\_g, file\_b}}
+		
+		\For{\textit{y} \textbf{in range}(\textit{height})}
+		\For{\textit{x} \textbf{in range}(\textit{width})}
+		\State \textit{r, g, b} $\gets$ \Call{GetPixelRGB}{\textit{img[y, x]}}
+		\State \Call{WriteToFiles}{\textit{file\_r, file\_g, file\_b, r, g, b}}
+		\EndFor
+		\EndFor
+		
+		\State \Call{DownloadFiles}{``R.hex'', ``G.hex'', ``B.hex''}
+		\State \Call{Print}{``Files downloaded. Conversion to hex completed.''}
+		\EndFunction
+		
+		\Statex
+		
+		\Function{ReadImage}{\textit{image\_path}} \Comment{Read the image using OpenCV}
+		\State \textit{img} $\gets$ \Call{cv2.imread}{\textit{image\_path}}
+		\State \Return \textit{img}
+		\EndFunction
+		
+		\Function{ConvertToRGB}{\textit{img}} \Comment{Convert BGR to RGB format}
+		\State \textit{img} $\gets$ \Call{cv2.cvtColor}{\textit{img, cv2.COLOR\_BGR2RGB}}
+		\State \Return \textit{img}
+		\EndFunction
+		
+		\Function{GetDimensions}{\textit{img}} \Comment{Get image dimensions}
+		\State \textit{height, width, \_} $\gets$ \Call{img.shape}{}
+		\State \Return \textit{height, width}
+		\EndFunction
+		
+		\Function{CreateOutputFiles}{\textit{file\_r, file\_g, file\_b}} \Comment{Open output files in write mode}
+		\State \textit{file\_r} $\gets$ \Call{open}{``R.hex'', ``w''}
+		\State \textit{file\_g} $\gets$ \Call{open}{``G.hex'', ``w''}
+		\State \textit{file\_b} $\gets$ \Call{open}{``B.hex'', ``w''}
+		\EndFunction
+		
+		\Function{GetPixelRGB}{\textit{pixel}} \Comment{Get RGB values of a pixel}
+		\State \textit{r, g, b} $\gets$ \textit{pixel}
+		\State \Return \textit{r, g, b}
+		\EndFunction
+		
+		\Function{WriteToFiles}{\textit{file\_r, file\_g, file\_b, r, g, b}} \Comment{Write pixel values to files}
+		\State \Call{file\_r.write}{``\%02X\textbackslash n'' \% r}
+		\State \Call{file\_g.write}{``\%02X\textbackslash n'' \% g}
+		\State \Call{file\_b.write}{``\%02X\textbackslash n'' \% b}
+		\EndFunction
+		
+		\Function{DownloadFiles}{\textit{file1, file2, file3}} \Comment{Download files using Colab}
+		\State \Call{files.download}{\textit{file1}}
+		\State \Call{files.download}{\textit{file2}}
+		\State \Call{files.download}{\textit{file3}}
+		\EndFunction
+	\end{algorithmic}
+\end{algorithm}
+
+\par Each output file contains 2 hexadecimal numbers per line, representing this layer's pixel values. As shown in the figure below, each line comprises of 8 bits, represented each by 2 hexadecimal units: \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{hex of image.png}
+    \caption{Hex file generated containing above image pixel values (Snippet)}
+    \label{fig:hexofimage}  
+\end{figure}
+
+\section{Frequency Divider}
+\par According to the Video Electronics Standards Association (VESA) VGA timing standards for a resolution of 640*480, the Video Graphics Array protocol requires a clock frequency of 25MHz; however, the clock on the DE10-Lite Board by Terasic provides a 50MHz clock. \newline
+\par To solve this design conflict, one must adjust the frequency to suit the required design. To reach a frequency of 25MHz from a 50MHz input signal, one must divide the frequency by two, which can be done by using a DQ Flip Flop logic. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{Freq.png}
+	\caption{Frequency Division using Flip Flop \cite{figsix}}
+	\label{fig:25to50}  
+\end{figure}
+
+\par In order to have a system that is completely synchronized, the 25 MHz clock will be used as the main clock source input for all the following modules. This is done to ensure that the system functions at the same speed and to avoid any data loss, due to certain systems working faster than others, causing an overflow of data \newline
+
+\begin{algorithm}[H]
+\caption{Frequency Divider \cite{fpgaipvgarepo}}
+\begin{algorithmic}[line numbering]
+\Procedure{fifty\_to\_twenty\_five}{$\text{clock\_fifty}$, $\text{clock\_twenty\_five}$}
+    \State \textbf{Input:} $\text{clock\_fifty}$ (input signal)
+    \State \textbf{Output:} $\text{clock\_twenty\_five}$ (output register)
+
+    \While{true} \Comment{Always block}
+        \If{rising edge of $\text{clock\_fifty}$}
+            \State $\text{clock\_twenty\_five} \gets \neg \text{clock\_twenty\_five}$ \Comment{Toggling}
+        \EndIf
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\par In this module, the output representing the 25MHz clock is toggling its value on every positive edge of the input 50MHz clock. This means that for each 1 clock cycle of the 25 MHz clock, 2 clock cycles of the 50MHz clock have ticked. The module takes the 50 MHz input clock signal and uses feedback from the flip flop's negated output to toggle the current value of the clock output signal.  \newline
+
+\section{Memory}
+\par A DE10-Lite board has a 64 MB synchronous dynamic random-access memory (SDRAM). SRAM is a type of memory that stores data using a static method that does not require to be periodically refreshed. SRAM is a fast and reliable type of memory; however, it is expensive and power-consuming. For this reason, SRAM is mostly exclusively used for cache memory and crucial applications. \newline
+\par SRAM cells consist of six transistors that form a flip-flop circuit. Each cell can store one bit of data, either 0 or 1. The data can be accessed by applying a voltage to the word line and reading the output from the bit line. The data can be changed by applying a different voltage to the bit line and writing the new value to the cell. SRAM cells retain their data as long as power is supplied to them. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{SRAM_Cell_(6_Transistors).svg.png}
+    \caption{6 Transistor SRAM \cite{figseven}}
+    \label{fig:SRAM6Transistor}  
+\end{figure}
+
+\subsection{Memory Module}
+\par To utilize the design, the memory module is designed to use memory blocks and no look-up tables (LUTs). This is done by designing the system using arrays that are initialized with values of the 3 different image layers. \newline
+\par The designed module initializes 3 arrays ram\_R, ram\_G, and ram\_B that hold the hexadecimal values of the red, green, and blue channels of the image, respectively. Moreover, an address counter is defined and incremented every clock cycle, making it easier to access a desired value easily. This art of design follows the functionality of a Synchronous Random Access Memory (SRAM). \newline
+\par This module is adaptable and easily configurable, considering that values are all parameterized and easily changed to suit any design.  The use of initialization files also ensures a well-defined starting state for the memory, aiding in the validation and testing phases. \newline
+\par Memory access is orchestrated through the use of an address counter. On each clock cycle, the address counter is either reset during an active low reset event or incremented. The incremented address is then used to access the corresponding pixel data from the memory arrays of all 3 channels. The read data for each color channel is updated and outputted accordingly during the following clock cycle. \newline
+\par The module, called SRAM, defines an address bus and 3 data buses, 1 for each channel. The module initializes each memory bus with the corresponding hexadecimal value of the assigned color layer. On each clock cycle, the address counter is incremented and passed as output alongside the corresponding R, G, and B values, given that the reset button is not pressed.  \newline
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|} \hline 
+         Address Number&  Red Value&  Green Value& Blue Value\\ \hline 
+         0&  5D&  76& 7B\\ \hline 
+         1&  5E&  75& 7C\\ \hline 
+         2&  62&  73& 7B\\ \hline 
+         3&  67&  71& 7A\\ \hline 
+         4&  63&  74& 7B\\ \hline 
+         5&  64&  76& 7A\\ \hline 
+         6&  64&  75& 7C\\ \hline 
+         7&  60&  77& 7C\\ \hline 
+         8&  65&  78& 7E\\ \hline
+    \end{tabular}
+    \caption{First 9 Address Values of Color Components (Hexadecimal Format)}
+    \label{tab:tablepixelvalues}
+\end{table}
+
+\par When the reset signal is pressed, all values are forced back to 0, including the address buses. A similar response is visible when the video\_on signal is low, indicating that the pixel counters have either exceeded 640 horizontally, or 480 vertically. During the period where the horizontal and vertical pixel counters exceed 640 and 480, respectively, the reading process should come to a halt, for this time period resembles the horizontal and vertical front porches, synchronization signals, and back porches, where the system should output values of 0 to the red, green, and blue color channels at the time. The module algorithm is simplified bellow:  \newline 
+
+\begin{algorithm}[H]
+	\caption{Memory Module \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\Require
+		\Statex \textbf{Parameters:}
+		\Statex \hspace{1em} \textit{databus\_width} = 8,
+		\Statex \hspace{1em} \textit{RAM\_memory\_location\_number} = 307200,
+		\Statex \hspace{1em} \textit{address\_bus\_width} = $clog2(RAM\_memory\_location\_number)$
+		\Require
+		\Statex \textbf{Inputs:}
+		\Statex \hspace{1em} \textit{clock}, \textit{neg\_reset}, \textit{video\_on}
+		\Ensure
+		\Statex \textbf{Outputs:}
+		\Statex \hspace{1em} \textit{read\_data\_output\_R}, \textit{read\_data\_output\_G}, \textit{read\_data\_output\_B},
+		\Statex \hspace{1em} \textit{read\_address\_output}
+		\Statex
+		
+		\State \textbf{Internal Registers:}
+		\hspace{1em} \textit{address\_counter}, \textit{ram\_R}, \textit{ram\_G}, \textit{ram\_B},
+		\hspace{1em} \textit{read\_data\_R}, \textit{read\_data\_G}, \textit{read\_data\_B}, \textit{read\_address}
+		
+		\State
+		
+		\State \textbf{Initialize:}
+		\hspace{1em} Set \textit{address\_counter} to 0, initialize memory from files \textit{R.hex}, \textit{G.hex}, \textit{B.hex}
+		
+		\State
+		
+		\While{\textit{neg\_reset} is low}
+		\State \Comment{Synchronous reset}
+		\State Set \textit{read\_data\_R}, \textit{read\_data\_G}, \textit{read\_data\_B} to 0
+		\State Set \textit{address\_counter} to 0
+		\EndWhile
+		
+		\While{\textit{neg\_reset} is high and \textit{video\_on} is high}
+		\State \Comment{Read data from the RAM based on the address counter}
+		\State Set \textit{read\_data\_R} to \textit{ram\_R[address\_counter]}
+		\State Set \textit{read\_data\_G} to \textit{ram\_G[address\_counter]}
+		\State Set \textit{read\_data\_B} to \textit{ram\_B[address\_counter]}
+		
+		\State \Comment{Increment the address counter}
+		\State Set \textit{address\_counter} to \textit{address\_counter + 1}
+		
+		\State \Comment{Assign the current address counter to the read address output}
+		\State Set \textit{read\_address} to \textit{address\_counter}
+		\EndWhile
+		
+		\State
+		
+		\State \textbf{Assign Outputs:}
+		\State Set \textit{read\_data\_output\_R} to (\textit{video\_on}) ? \textit{read\_data\_R} : 8'b0
+		\State Set \textit{read\_data\_output\_G} to (\textit{video\_on}) ? \textit{read\_data\_G} : 8'b0
+		\State Set \textit{read\_data\_output\_B} to (\textit{video\_on}) ? \textit{read\_data\_B} : 8'b0
+		\State Set \textit{read\_address\_output} to (\textit{video\_on}) ? \textit{read\_address} : \textit{read\_address} - 1
+	\end{algorithmic}
+\end{algorithm}
+
+\par The address counter starts at 0, where the first pixel value from each channel is being read, but the output is undefined. Starting the second clock cycle forward, the address counter reads the pixel values from each channel numbered 'x', while writing pixel values at 'x-1' from all color channels to the output. This delay of one clock cycle, that estimates to 40 nanoseconds (ns) delay at a frequency of 25 MHz, is a result of the sequential nature of the design. \newline
+
+\section{Image Processing}
+\par Image processing deals with manipulating and transforming digital images. It can be used for various purposes, such as enhancing the quality, extracting features, compressing data, detecting objects, recognizing faces, generating art, and more. Image processing involves applying mathematical operations and algorithms to the pixels or regions of an image, which can be represented as matrices or arrays of numbers. Some common image processing techniques are filtering, thresholding, edge detection, segmentation, morphological operations, histogram equalization, and convolutional neural networks. \newline
+\par The main goal of this research is to implement different image processing algorithms and to provide a module that is usable for numerous techniques, by turning the switches on the DE10-Lite Board on and off to create a binary combination input to the image processing module. The ten switches provide $2^{10}$ (1024) different possibilities for image manipulation algorithms. \newline
+\par The first four algorithms are Image Brightness Adder, Image Brightness Subtraction, Image Thresholding, and Image Inversion; assigned to switches forming numbers 1, 2, 3, and 4, respectively, while number 0 (all switches are off) will output the original image. Please notice that using a binary combination of the switches allows more image processing algorithms to be implemented ($2^(10) = 1024$), whereas using direct switch inputs only allows 11 algorithms and enables the risk of having 2 or more switches to be on at the same time, which will overwhelm the system and produce unexpected outcomes. \newline
+\par This thesis will use the following image for reference:\newline 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{IMG-20190511-WA0004.jpg}
+    \caption{Original Image}
+    \label{fig:imageOriginal}  
+\end{figure}
+\par In order to follow the VGA protocol guidelines and theory of operation, the process needs to be paused during both horizontal and vertical blanking periods, where the module should output values of 0 to all color channels. \newline
+\par The image processing module determines whether a blanking output or a manipulated image interval output should be present using an input flag, video\_on, that is high when the horizontal counter is between 0 and 640, while the vertical counter is in the range of 0 to 480, which is the active image output region according to the Video Graphics Array Protocol. \newline
+\par In order to further optimize the design and to utilize the FPGA resources and parallelism capabilities, the three color layers are fed to the module separately. This makes it possible to manipulate all color channels at the same time, using only one address counter. For further optimization, ternary operators are used instead of if-else statements, this design ensures that no matter what the image manipulation technique is, the output will be visible with only 1 clock cycle's delay, which is, at 25 MHz, equivalent to only 40 ns. \newline
+\par The below algorithm shows the general flow of the module: \newline
+
+\begin{algorithm}[H]
+	\caption{IMAGE PROCESSING \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\Procedure{IMAGE\_PROCESSING\_TEST}{$clock, neg\_reset, video\_on, IP\_decision\_switches, RED\_values, GREEN\_values, BLUE\_values, RED\_values\_OUT, GREEN\_values\_OUT, BLUE\_values\_OUT, relative\_pixel\_address$}
+		\State $reg [7:0] RED$
+		\State $reg [7:0] GREEN$
+		\State $reg [7:0] BLUE$
+		\State $reg [2:0] work\_address$ \Comment{Use only 8 pixels per module instantiation}
+		\State
+		\State $relative\_pixel\_address \gets work\_address$
+		\State $RED\_values\_OUT \gets RED$
+		\State $GREEN\_values\_OUT \gets GREEN$
+		\State $BLUE\_values\_OUT \gets BLUE$
+		\State
+		\State \textbf{initial} 
+		\State \hspace{\algorithmicindent}$RED \gets 0$
+		\State \hspace{\algorithmicindent}$GREEN \gets 0$
+		\State \hspace{\algorithmicindent}$BLUE \gets 0$
+		\State \hspace{\algorithmicindent}$work\_address \gets 0$
+		\State
+		\State \textbf{always} @(posedge clock) 
+		\State \textbf{begin}
+		\State \hspace{\algorithmicindent}\textbf{if} ($\neg neg\_reset$) 
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\Comment{Synchronous reset}
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}$RED \gets 0$
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}$GREEN \gets 0$
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}$BLUE \gets 0$
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}$work\_address \gets 0$
+		\State \hspace{\algorithmicindent}\textbf{else} 
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{begin}
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{if} ($video\_on$) 
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{case} ($IP\_decision\_switches$)
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\Comment{Add cases as necessary}
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{default:} 
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}$RED \gets RED\_values;$
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}$GREEN \gets GREEN\_values;$
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}$BLUE \gets BLUE\_values;$
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{endcase}
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}$work\_address \gets work\_address + 1$
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{end}
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{else}
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{begin}
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{RED} $\gets$ 0;
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{GREEN} $\gets$ 0;
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{BLUE} $\gets$ 0;
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{work\_address} $\gets$ 0;
+		\State \hspace{\algorithmicindent}\hspace{\algorithmicindent}\hspace{\algorithmicindent}\textbf{end}
+		\State \hspace{\algorithmicindent}\textbf{end}
+		\State \textbf{end}
+		\EndProcedure
+		\end{algorithmic}
+	\end{algorithm}
+
+\subsection{Brightness Addition}
+\par Image Brightness Addition involves the process of adding a certain value to each pixel. However, one should be cautious that a pixel's value cannot exceed 255. So, if one is attempting to add 100 to each pixel in an image, and a pixel has a value greater than 155, the pixel values will be clipped and fixed at 255.\newline
+\par This technique finds diverse applications in fields such as medical analysis, computer vision, and image sensing. In medical analysis, Image Brightness Addition plays a crucial role in visualizing subtle details within radio-graphic images. By selectively brightening specific regions, medical professionals can enhance the clarity of abnormalities, aiding in the diagnosis process. \newline
+\par In computer vision applications, Image Brightness Addition is utilized to improve the performance of algorithms relying on image features. Enhancing brightness makes edges and contours more distinguishable, contributing to more accurate object recognition and tracking. This proves particularly valuable in autonomous systems, surveillance, and robotics, where clear visual information is paramount. \newline
+\par In computer vision applications, Image Brightness Addition is utilized to improve the performance of algorithms relying on image features. Enhancing brightness makes edges and contours more distinguishable, contributing to more accurate object recognition and tracking. This proves particularly valuable in autonomous systems, surveillance, and robotics, where clear visual information is paramount. \newline
+\par Moreover, in image sensing scenarios like satellite imagery or remote sensing, adjusting brightness compensates for variations in lighting conditions. This ensures consistent image quality across diverse environments and lighting situations, facilitating effective analysis and interpretation of the captured data. \newline
+\par The below image is an example of the output from an image brightness addition technique. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{brightnessADDED.png}
+	\caption{Added Brightness}
+	\label{fig:imageBrighter}  
+\end{figure}
+
+\par This code snippet shows how image brightness addition is done when the 10 switches make a combination that is equivalent to the binary of 1. This module also takes care of clipping pixel values that exceed 255 by setting them to 255: \newline
+
+\begin{algorithm}[H]
+	\caption{Add Brightness \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\If {$IP\_decision\_switches$ is $10'b0000000001$}
+		\State \Comment{ADD\_BRIGHTNESS}
+		\State $\text{RED} \gets (\text{RED\_values} + \text{add\_to} > 255) \, ? \, 255 \, : \, \text{RED\_values} + \text{add\_to}$
+		\State $\text{GREEN} \gets (\text{GREEN\_values} + \text{add\_to} > 255) \, ? \, 255 \, : \, \text{GREEN\_values} + \text{add\_to}$
+		\State $\text{BLUE} \gets (\text{BLUE\_values} + \text{add\_to} > 255) \, ? \, 255 \, : \, \text{BLUE\_values} + \text{add\_to}$
+		\EndIf
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Brightness Subtraction}
+\par Image Brightness Subtraction is a nuanced technique employed in image processing, where a predetermined value is subtracted from each pixel. The process demands careful consideration, ensuring that a pixel's value does not fall below 0. If, for instance, an attempt is made to subtract 100 from a pixel with a value smaller than 100, the pixel values are appropriately clipped and fixed at 0. \newline
+\par This method finds utility in diverse applications. In computer vision, Brightness Subtraction proves valuable for refining image details, aiding in object recognition, and facilitating feature extraction. Within medical applications, it is crucial for fine-tuning medical images, emphasizing specific areas of interest or suppressing background noise. \newline
+\par In image sensing technologies, Brightness Subtraction plays a pivotal role in enhancing the quality of captured images. By strategically subtracting brightness, it becomes possible to emphasize particular aspects of an image while downplaying others. This versatility makes Brightness Subtraction an indispensable tool for professionals working in image processing, computer graphics, and various scientific domains. \newline
+\par The process contributes significantly to enhancing image quality and meeting specific requirements across a spectrum of applications. These applications span fields such as astronomy, where image manipulation aids in revealing faint celestial objects against a darker background, and in surveillance systems, where it assists in isolating relevant details for analysis. Overall, Brightness Subtraction stands as a key tool for professionals navigating the complexities of image processing. \newline
+\par The below image is an example of the output from an image brightness subtraction technique. \newline
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{brightnessSUBBED.png}
+    \caption{Subtracted Brightness}
+    \label{fig:imageDarker}  
+\end{figure}
+\par This code snippet shows how image brightness subtraction is done when the 10 switches make a combination that is equivalent to the binary of 2. This module also takes care of clipping pixel values that fall short of 0 by setting them to 0: \newline
+
+\begin{algorithm}[H]
+	\caption{Subtract Brightness \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\If {$IP\_decision\_switches$ is $10'b0000000010$}
+		\State \Comment{SUBTRACT\_BRIGHTNESS}
+		\State $\text{RED} \gets (\text{RED\_values} < \text{subtract\_from}) \, ? \, 0 \, : \, \text{RED\_values} - \text{subtract\_from}$
+		\State $\text{GREEN} \gets (\text{GREEN\_values} < \text{subtract\_from}) \, ? \, 0 \, : \, \text{GREEN\_values} - \text{subtract\_from}$
+		\State $\text{BLUE} \gets (\text{BLUE\_values} < \text{subtract\_from}) \, ? \, 0 \, : \, \text{BLUE\_values} - \text{subtract\_from}$
+		\EndIf
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Threshold Operation}
+\par 
+Image thresholding is a fundamental technique that plays a crucial role in image processing. It offers a straightforward yet powerful method for image segmentation, particularly in the identification of Regions of Interest (ROI). The concept is simple: pixels in an image are compared to a predefined threshold value. If a pixel's intensity surpasses this threshold, it is set to a maximum value, typically 255 (white), while values below the threshold are set to 0 (black). \newline
+\par The implementation discussed here focuses on classic thresholding, where a fixed threshold is applied uniformly across the entire image. This approach is effective in various applications, and its impact is particularly notable in medical contexts. \newline
+\par In medical image processing, classic thresholding is extensively used for detecting anomalies, tumors, or specific features within images. By setting an appropriate threshold, medical professionals can highlight areas of interest, aiding in the identification and diagnosis of diseases such as cancer. The binary outcome simplifies image interpretation, allowing for clearer visualization of relevant structures. \newline
+\par This method is especially valuable in automated systems designed for medical image analysis, contributing to the development of advanced diagnostic tools. The capability to define distinct regions based on pixel intensities facilitates precise localization and analysis, ultimately assisting medical practitioners in making informed decisions. \newline
+\par The adoption of classic image thresholding in medical applications underscores its significance in contributing to advancements in healthcare technologies. As technology continues to evolve, these image processing techniques prove instrumental in enhancing diagnostic accuracy and, consequently, patient care. \newline
+\par The below image is an example of the output from an image thresholding technique. \newline
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{Threshold_Image.jpg}
+	\caption{Threshold Image at 127}
+	\label{fig:imageThreshold}  
+\end{figure}
+\par This code snippet shows how image thresholding is done when the 10 switches make a combination that is equivalent to the binary of 3: \newline
+\begin{algorithm}[H]
+	\caption{Image Thresholding \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\If {$IP\_decision\_switches$ is $10'b0000000011$}
+		\State \Comment{Image Thresholding}
+		\State $\text{RED} \gets (\text{RED\_values} \geq \text{threshold}) \, ? \, 255 \, : \, 0$
+		\State $\text{GREEN} \gets (\text{GREEN\_values} \geq \text{threshold}) \, ? \, 255 \, : \, 0$
+		\State $\text{BLUE} \gets (\text{BLUE\_values} \geq \text{threshold}) \, ? \, 255 \, : \, 0$
+		\EndIf
+	\end{algorithmic}
+\end{algorithm}
+
+\subsection{Inversion Operation}
+\par Each pixel in an image holds a value between 0 (Black) and 255 (White). Inverting an image refers to inverting the brightness levels, making the dark pixels bright and the bright pixels dark. This is done by subtracting the actual value of the pixel from 255. The Inversion Operation is mainly used in medical applications, where it proves to be very useful in improving the visibility of certain features, such as blood vessels and tumors. \newline
+\par Inversion is a fundamental operation in image processing that alters the appearance of an image by reversing the brightness values of each pixel. The process involves subtracting the current pixel value from the maximum intensity value, 255 for an 8-bit image. Mathematically, it is calculated as: actual\_pixel\_value = 255 - actual\_pixel\_value. \newline
+\par The inversion operation has applications in medical imaging where it can enhance the visibility of certain anatomical structures. In the context of medical analysis, such as X-ray or MRI images, inverting the pixel intensities can highlight features like blood vessels or abnormalities, aiding medical professionals in diagnosis. \newline
+\par Moreover, the inversion technique is beneficial in computer vision tasks where feature extraction and object recognition are crucial. By manipulating the brightness levels, the inverted image can bring out specific details that might not be easily discernible in the original form. \newline
+\par The below image is an example of the output from an image inverssion technique. \newline
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Invert_Image.jpg}
+    \caption{Inverted Values}
+    \label{fig:imageInverted}  
+\end{figure}
+\par This code snippet shows how image inversion is done when the 10 switches make a combination that is equivalent to the binary of 4: \newline
+\begin{algorithm}[H]
+	\caption{Image Inversion \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\If {$IP\_decision\_switches$ is $10'b0000000100$}
+		\State \Comment{Image Inversion}
+		\State $\text{RED} \gets 255 - \text{RED\_values}$
+		\State $\text{GREEN} \gets 255 - \text{GREEN\_values}$
+		\State $\text{BLUE} \gets 255 - \text{BLUE\_values}$
+		\EndIf
+	\end{algorithmic}
+\end{algorithm}
+
+\section{Video Graphics Array}
+\par VGA (Video Graphics Array) is a standard for displaying graphics on a monitor. It uses an analog signal to transmit the pixel data from a video source - the FPGA, in this case - to a monitor that supports the Video Graphics Array standard. \newline
+\par A VGA video stream consists of various horizontal lines, depending on how many rows an image consists of. Each horizontal line consists of a series of pixels, the number of pixels depends on the number of columns in an input image. An image is written, displayed, pixel by pixel from left to right in the same horizontal line, and the horizontal lines are displayed top to bottom when a row is completely displayed. \newline
+\par A horizontal row and a frame each consist of the following: active region and blanking region. 
+\begin{description}
+    \item[Active Region]: This is the region where the Red, Green, and Blue values are being transmitted and displayed on the output monitor.  
+    \item[Blanking Region]: This region follows the active region where the image pixel values are being transmitted. In this region, black pixels (value = 0x00) are being transmitted to the monitor. The Blanking Region is divided into two sub-regions. 
+\end{description}
+\begin{description}
+	\item[Front Porch]: The front porch region is defined as the region that precedes the horizontal or vertical synchronization pulse signals.
+	\item[Back Porch]: The back porch region is defined as the region that succeeds the synchronization pulse signals.
+\end{description}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{vga_line.png}
+    \caption{Demonstration of VGA Horizontal Synchronization Signal \cite{figeight}}
+    \label{fig:vgasignals}  
+\end{figure}
+
+\subsection{VGA Controller Design}
+\par To design a VGA controller in Verilog HDL, one shall understand how the Video Graphics Array protocol introduced by IBM works. VGA is one of the most widely used video display protocols and is being used for the ability to display detailed and sharp output images. \newline
+\par Video Graphics Array (VGA) uses separate signals for each of the three colors (Red, Green, Blue). Additionally, it employs two extra signals, HSYNC (Horizontal Synchronization) and VSYNC (Vertical Synchronization), to organize the timing of displaying each pixel. \newline
+\par The Vertical Sync pulse signal indicates the completion of displaying a full frame, allowing the controller to start displaying the next frame. On the other hand, the Horizontal Sync pulse signal is used to mark the end of a line. \newline
+\par In conclusion, the Vertical Sync signal manages the transition between frames, while the Horizontal Sync signal governs the transition between lines within a frame. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{vga_protocol.png}
+    \caption{VGA Protocol Layout \cite{fignine}}
+    \label{fig:vgaprotocol}  
+\end{figure}
+
+\subsubsection{VGA Vertical Counter}
+\par The first section of the module that needs to be designed is the vertical counter, which will be one of the two basic, bottom-most-level sections of the Video Graphics Array Controller alongside the horizontal counter module discussed below. The images that are studied in this thesis are restricted to size 640 by 480, as previously mentioned. \newline
+\par The vertical counter is responsible for producing the vertical synchronization (VSYNC) signal that indicates that a frame has been written completely and successfully; moreover, this design keeps track and presents the y coordinate of each displayed image pixel. The module needs to synchronize to the clock; hence, a clock signal is provided at a frequency of 25 MHz. An active low reset is responsible for resetting the pixel register back to 0. An extra feature is added to the algorithm, where an enable signal is taken as a flag to the system, this enable signal is an integration with the horizontal counter section discussed later. The pixel register is updated to the next pixel register's values only when the enable signal is high, hence counting how many rows are displayed successfully and is able to determine when the frame is over and when to produce the vertical active low synchronization pulse. \newline
+
+\subsubsection{VGA Horizontal Counter}
+\par The horizontal synchronization signal indicates that a complete horizontal line of pixels has been displayed. A line, or row, of pixels contains 640 pixel values, as per the agreed upon image size of 640*480 - apart from the front porch, back porch, and synchronization signal, there are 480 lines, or rows of pixels that each contain 640-pixel values and the mentioned blanking period. The horizontal counter section is responsible for sending a horizontal signal indicating that a row is done displaying after the 640-pixel values are sent. \newline
+\par In this section, the 'inputs' are the clock and the reset signal, while the 'outputs' are the enable signal to the vertical counter, called x\_is\_done, and the x-coordinates of the row that has been displayed x\_pixels. The coordinates are continuously assigned to the pixel register being manipulated, The flag indicates that a row is done diplaying by being assigned a value of 1 if, and only if, the pixel register being displayed reaches the decimal value of 799, indicating that a row is displayed. \newline
+\par To update the register being manipulated, a register holding the next register positions is created. Each positive edge of the clock indicates a state change is to be made, if the reset button is pressed - a 0 is sent - the pixel register should reset by being assigned to the value 0. If the reset button isn't triggered, the pixel register is incremented, by being assigned the value of the next pixel register holds. \newline
+
+\subsubsection{VGA Controller}
+\par Using both the vertical and horizontal counters, a Video Graphics Array controller can be designed requiring only 2 inputs; namely, the 25 MHz clock signal and the reset button, which is designed to be active low, according to the DE10-Lite board by Terasic. The VGA Controller module has several outputs: a signal indicating that the VGA controller is enabled and the video is on (horizontal position < 640 \& vertical position < 480) (video\_on), the horizontal coordinate of the pixel being displayed (x\_pixels), the vertical position of the displayed pixel (y\_pixels), the vertical synchronization signal (vertical\_sync), and the horizontal synchronization signal (horizontal\_sync). \newline
+\par The video\_on signal indicates that the VGA controller is displaying the actual image, not the blanking intervals, this is done by continuously assigning a 1 if the horizontal coordinates x\_pixels and the vertical coordinates y\_pixels are less than or equal to 640 and 480, respectively. \newline
+\par In VGA, the HSYNC (Horizontal Synchronization) signal becomes active during the horizontal synchronization pulse. This pulse is part of the horizontal blanking interval and signals the start of a new line or row on the display. HSYNC is typically active (set to a low voltage level) during this synchronization pulse and transitions to an inactive state (high voltage level) during the active video portion of the horizontal line. The active video portion represents the actual image data being displayed, while the horizontal blanking interval includes the front porch, sync pulse, and back porch. \newline
+\par HSYNC helps synchronize the scanning of the electron beam across the screen and indicates when a new line should begin. The actual image, front porch, synchronization pulse, and back porch have sizes of 640, 16, 96, and 48, respectively. Together, these sizes add up to a total of 800 pixels, producing a full row of an image. \newline
+\par In VGA, the VSYNC (Vertical Synchronization) signal becomes active during the vertical synchronization pulse. This pulse is part of the vertical blanking interval and signals the start of a new frame or screen on the display. VSYNC is typically active (set to a low voltage level) during this synchronization pulse and transitions to an inactive state (high voltage level) during the active video portion of the vertical frame. The active video portion represents the actual image data being displayed, while the vertical blanking interval includes the front porch, sync pulse, and back porch.\newline
+\par VSYNC helps synchronize the scanning of the electron beam vertically across the screen and indicates when a new frame should begin. The actual vertical image size, front porch, synchronization pulse, and back porch have sizes of 480, 10, 2, and 33, respectively. Together, these sizes add up to a total of 525 lines, producing a full frame of an image. \newline
+\par The size of the image is fixed at 640x480 for convenience. The values for the front porches, synchronization pulses, and back porches are set according to the Video Electronics Standards Association (VESA) VGA timing standards for a resolution of 640*480. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{vga_frame.png}
+    \caption{Synchronization Pulses Relative to Green Line \cite{figeight}}
+    \label{fig:vgaSync}  
+\end{figure}
+
+\subsection{R-2R DAC}
+\par While the FPGA processes and outputs digital signals, a VGA port functions correctly only if analog signals are transmitted to the pins. A Digital to Analog Converter (DAC) is required to receive the digital signals from the FPGA and to convert the digital signals into analog signals to be sent to the VGA port pins. Mounted on the DE10-Lite board and connected to the VGA port is a 4-bit R-2R digital-to-analog converter. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{Screenshot 2023-10-25 223215.png}
+	\caption{Connection Between FPGA and VGA \cite{figfour}}
+	\label{fig:fpga2vga}  
+\end{figure}
+
+\par R-2R Digital to Analog Converters (DAC) uses two resistors for each bit to convert a digital binary input number to an output signal proportional to the input value. Advantages of the R-2R Digital to Analog Converters include simple design, cheap implementation, and requirement of only two different resistor values, one is the double of the other.\newline
+\par The R-2R Digital-Analog Converter is also known as the Ladder DAC, due to the presence of step-like shapes, as shown in the below figure. \newline
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{Full R2R.png}
+    \caption{4-bit Ladder DAC}
+    \label{fig:R2R}  
+\end{figure}
+
+\par To design an R-2R DAC circuit, one simply needs to determine the resistor values to be used; for example, if a standard \begin{math}500 \Omega\end{math} resistor is used, the other resistor value should also be standard \begin{math}1000 \Omega\end{math} resistor. The number of resistors required in a digital-to-analog circuit is equivalent to double the number of input bits; the number of input bits does not impact the values of the resistors, as the weighted sum will always be the same for all values of R and 2R resistors. However, as we increase the number of bits - input voltage points to the DAC - the resolution of the output analog value will improve.\newline
+\par An R-2R Digital to Analog Converter is simply a combination of resistors connected in both series and parallel. Voltages are inserted into different input points of the converter, based on the bit significance, and a Thevinin equivalent Voltage can then be measured or calculated, representing the analog equivalent output of the DAC and into the VGA port.\newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=7cm]{R2RSPClean.jpeg}
+    \caption{Series and Parallel Resistor Connections}
+    \label{fig:R2RSP}  
+\end{figure}
+
+\subsubsection{4 bit DAC}
+\par The Digital-to-Analog converter connected to the VGA output on the DE10-Lite board is only a 4 bit R-2R converter. Therefore, each color channel can be only represented by 4 bits, not the complete 8 bits. \newline
+\par Choosing to keep the 4 most significant bits instead of the 4 least significant bits depended on the design requirements. The most significant bits (MSBs) are used when preserving the general magnitude and scope of the design is necessary, while using the least significant bits (LSBs) ensures precision and preservation of details. \newline
+\par For this reason, a module that clips the color channels to 4 bits each is designed. This design is crafted to take the most significant 4 bits of each pixel value, as the most significant bits are more descriptive of the color value changes than the least significant bits. \newline
+
+\begin{algorithm}[H]
+	\caption{8 to 4 Bit Converter Module \cite{fpgaipvgarepo}}
+	\begin{algorithmic}[1]
+		\Procedure{Displayer}{$\text{clock}, \text{neg\_reset}, \text{RED}, \text{GREEN}, \text{BLUE}, \text{video\_on}, \text{RED\_out}, \text{GREEN\_out}, \text{BLUE\_out}$}
+		\State $\text{reg} [3:0] \text{dummy\_red}$
+		\State $\text{reg} [3:0] \text{dummy\_green}$
+		\State $\text{reg} [3:0] \text{dummy\_blue}$
+		\State $\text{reg} [3:0] \text{blank} = 0$
+		\State
+		\State $\text{assign} \text{RED\_out} \gets \text{dummy\_red}$
+		\State $\text{assign} \text{GREEN\_out} \gets \text{dummy\_green}$
+		\State $\text{assign} \text{BLUE\_out} \gets \text{dummy\_blue}$
+		\State
+		\State $\text{initial begin}$
+		\State \quad $\text{dummy\_red} \gets 0$
+		\State \quad $\text{dummy\_green} \gets 0$
+		\State \quad $\text{dummy\_blue} \gets 0$
+		\State $\text{end}$
+		\State
+		\State $\text{always} \text{@ (posedge clock)} \text{begin}$
+		\State \quad $\text{if} (\text{neg\_reset}) \text{begin}$
+		\State \quad \quad $\text{dummy\_red} \gets 0$
+		\State \quad \quad $\text{dummy\_green} \gets 0$
+		\State \quad \quad $\text{dummy\_blue} \gets 0$
+		\State \quad $\text{end}$
+		\State \quad $\text{else} \text{ begin}$
+		\State \quad \quad $\text{dummy\_red} \gets \text{RED}[7:4]$
+		\State \quad \quad $\text{dummy\_green} \gets \text{GREEN}[7:4]$
+		\State \quad \quad $\text{dummy\_blue} \gets \text{BLUE}[7:4]$
+		\State \quad $\text{end}$
+		\State $\text{end}$
+		\EndProcedure
+	\end{algorithmic}
+\end{algorithm}
+
+%\end{document}
