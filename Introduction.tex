@@ -1,0 +1,107 @@
+%{
+	Created by Shehab Hesham.
+%}
+
+\section{Motivation}
+
+\par The motivation for this bachelor thesis is to design and implement an image library and a VGA controller using a MAX10 FPGA that is mounted on a DE10-Lite board. This project aims to use an FPGA's acceleration ability to implement image processing algorithms and display manipulated images on a VGA monitor in real-time. The image library will consist of a set of different image processing functions that can perform basic operations on images, while the VGA output will enable the user to view the generated images on a monitor connected to the DE10-Lite board through a Video Graphics Array port. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{Flow Diagram.jpeg}
+	\caption{System Flow Diagram}
+	\label{fig:FlowDiag}   
+\end{figure}
+
+\par An FPGA can handle tasks in a way that is unique, compared to the well-known controllers. FPGA programming describes hardware configurations, not a logical sequence of events. The unique nature of a Field Programmable Gate Array is fascinating, making FPGA configuration a challenge worthy of research.\newline
+
+\par Using Hardware Description Languages requires a developer to go through a paradigm shift. Engineers' and programmers' mindsets are used to design algorithms that describe a process that is expected to run sequentially. FPGAs, on the other hand, describe hardware digital circuits, not algorithms. This gives a designer the ability to perform multiple tasks in parallel, obtaining real-time results. \newline
+
+\par While using HDLs, one shall be very careful when adding any logical element or wire, this gives the risk of using up the limited logic blocks and interconnects provided by an FPGA. This challenge in the reconfiguration of FPGAs is intriguing and is a wonderful learning opportunity. A motivation for this project is to learn FPGA configuration concepts and use the knowledge to apply image processing algorithms.\newline
+
+\section{Background}
+\subsection{Field Programmable Gate Arrays}
+\par Field Programmable Gate Arrays (FPGAs) are integrated circuits that can be reprogrammed, multiple times, by the user to implement various digital circuit designs. FPGAs consist of several Programmable Logic Blocks (PLBs) - also referred to as Configurable Logic Blocks (CLBs) or Logic Cells (LCs) - and a programmable matrix - a programmable interconnect - that is connected between the PLBs and is reconfigured as required through the design. FPGAs are flexible and fast, which makes them very useful in time-critical applications such as medical applications, aerospace applications, automotive applications, telecommunications, and the Industrial Internet of Things (IIoT) Industrial sectors. \newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=10cm]{FPGA-Structure.jpg}
+    \caption{FPGA Basic Structure, PLBs and Programmable Matrix \cite{figone}}
+    \label{fig:FPGAstruct}   
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=10cm]{FPGA vs MCU fig 1.png}
+    \caption{FPGA Building Blocks \cite{figtwo}}
+    \label{fig:FPGAbuildingBlocks}   
+\end{figure}
+
+\subsection{FPGA vs Microcontrollers}
+\par Unlike micro-controllers, Field Programmable Gate Arrays are capable of performing tasks concurrently, not sequentially. This can be justified by the fact that programming an FPGA is not the same as programming a microcontroller. Configuring an FPGA is similar to configuring Application Specific Integrated Circuits (ASICs), using a Hardware Description Language (HDL), such as VHDL, Verilog HDL, or System Verilog. \newline 
+
+%\par Programming a micro-controller is done, mainly, in the C language. The C language is used to describe a software algorithm by manipulating memory addresses, so programming a microcontroller means implementing a software process on fixed sets of hardware, which can only change when the microcontroller model is changed. \newline
+\par Programming a micro-controller is done, mainly, in the C language. The C language describes a software algorithm by manipulating memory addresses. Programming a microcontroller means implementing a software process on fixed sets of hardware, which can only change when the microcontroller model is changed. \newline
+
+\par On the other hand, programming an FPGA is done in a Hardware Description Language (HDL), such as VHDL, Verilog HDL, or System Verilog. HDLs in contrast to other programming languages, describe hardware connections; for example, a for loop with 100 iterations in C is just a digital logic circuit repeated 100 times. Logic Blocks on an FPGA are either used for simple logic elements (AND, for example), combinational logic functions or as memory blocks (for example, flip-flops).\newline
+
+%\includegraphics[width=10cm, height=10cm]{SWvHW.jpeg}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=10cm]{SWvHW.jpeg}
+    \caption{Software vs. Hardware Implementation of a Loop}
+    \label{fig:loopcompswhw}   
+\end{figure}    
+
+\subsection{Advantages of FPGAs}
+\par FPGAs offer advantages such as high performance, low power consumption, and flexibility over traditional microprocessors. An FPGA can be interfaced with various peripherals, camera modules, and sensors using standard protocols such as Serial Peripheral Interface (SPI), Inter-Integrated Circuit (I2C), Universal Asynchronous Receiver-Transmitter (UART), and General Purpose Input/Output (GPIO). One of the applications of FPGAs is image processing. Image processing can be used for enhancement, compression, segmentation, recognition, and synthesis tasks. Users that use Image Processing-based systems are integrating FPGAs to accelerate the process and increase the accuracy of the collected data.\newline
+
+\subsection{Video Graphics Array}
+\par The Video Graphics Array (VGA) protocol is a method of transmitting analog video signals from a source device to a display device using a 15-pin connector. The VGA protocol defines the resolution, refresh rate, color depth, and synchronization of video signals using two clock signal flags, HSYNC and VSYNC, responsible for horizontal and vertical pixel processing, respectively.  VGA standards were first introduced by IBM in 1987, the video display standard was developed in a computer series developed by the same company. VGA sends analog signals representing the three primary colors and the two synchronization signals to a monitor, allowing an image to be displayed. The analog signals are obtained by converting digital signals using an R-2R analog to digital converter (ADC). Despite the complexity of the VGA protocol, it is still among the most widely used display protocols.\newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=10cm]{VGA-connector-Pinout.jpg}
+    \caption{Video Graphics Array Pin-out \cite{figthree}}
+    \label{fig:VGAPinout}   
+\end{figure}
+
+\subsection{Terasic's Max10 Evaluation Board}
+\par The MAX10 FPGA is a low-cost, single-chip device that supports dual-configuration flash memory, analog-to-digital conversion, memory, and up to fifty thousand logic elements, this FPGA offered by Intel can be found on the DE10-Lite development board. The MAX10 FPGA can be programmed using the Quartus Prime software, Intel's Altera also provides readily configured pin assignment HDL files compatible with Quartus Prime v16. The DE10-Lite board from Terasic is cost-effective and is able to make use of all the FPGA's resources, the board features a VGA output port, Synchronous Dynamic Random Access Memory (SDRAM), USB-Blaster, an accelerometer, General Purpose Input/Output (GPIO) pins, and an Arduino Uno expansion.\newline
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=10cm, height=10cm]{DE10Lite.jpg}
+    \caption{DE10-Lite board with MAX10 FPGA \cite{figfour}}
+    \label{fig:DE10}   
+\end{figure}
+
+\subsection{Image Processing}
+\par Image processing deals with analyzing and performing operations on images. Image processing algorithms include increasing brightness, decreasing brightness, increasing contrast, decreasing contrast, blurring, inversion, thresholding, and edge detection. Some relevant applications include medicine, astronomy, security, and entertainment. \newline
+
+\section{Problem Statement}
+
+\par Advancements in FPGA's technology have made Image Processing fascinatingly faster and more accurate; therefore, this topic will be explored further in this bachelor thesis. \newline 
+
+\par Many researchers focused on certain and specific image processing algorithms, each paper discussed one algorithm as the main focus. However, some applications - such as surveillance - require the availability of multiple image processing algorithms - filters, for example - to be available at all times. For this reason, an FPGA-based image processing library, containing different image manipulation algorithms.\newline
+
+\section{Aims and Objectives}
+
+\par This thesis aims to explore the possibility of designing an image library and a VGA controller to utilize resources, save energy, and decrease computation time, making use of FPGA resources.  \newline
+
+\par Throughout this thesis, image processing algorithms will be implemented and tested using Verilog HDL. Verification will be done through Intel's ModelSim, Eda Playground, and through observation on a VGA monitor.\newline
+
+\par  Several researchers have focused on designing one image processing operation for a specific purpose, this research will provide a complete image processing library that encloses numerous IP-related operations that a user can switch between using the on-board switches provided on the DE10-Lite board.\newline
+
+\section{Significance}
+\par This thesis aims to create an easily expandable image processing module that can hold 1023 different image processing algorithms, alongside a default case (original image). \newline
+\par This designed system, when correctly implemented, can be very useful in a variety of industries. Some of which are: aerospace, security, and medicine. \newline
+\par Medical scans, for example, are often unclear and require more clarification; therefore, the system offers algorithms to clarify medical imaging.
+
+\section{Thesis Structure}
+
+\par Further in this bachelor thesis document, a literature review of related previous works is reviewed. Following the literature review section, research methodologies are discussed. After that, one will encounter the system results, followed by interpretations and discussions. Finally, future research possibilities will be discussed while highlighting the system's limitations. \newline
+
+
+%\end{document}
