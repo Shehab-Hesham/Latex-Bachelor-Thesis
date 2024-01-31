@@ -1,0 +1,118 @@
+%{
+	Created by Shehab Hesham.
+%}
+
+\documentclass[12pt, a4paper]{book}
+%useful for book 
+\usepackage{titlesec}
+\usepackage{graphicx} % Required for inserting images
+\graphicspath{{Images}} %Setting the graphicspath
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=5cm,right=5cm,marginparwidth=1.75cm]{geometry}
+% Useful packages
+\usepackage{amsmath}
+\usepackage[colorlinks=true, allcolors=black]{hyperref}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{csquotes}
+% Language setting
+\usepackage[english]{babel}
+% for images
+\usepackage{tikz}
+%Imports biblatex package
+\usepackage[sorting=none]{biblatex}
+%Import the bibliography file
+%\addbibresource{ref.bib} 
+%\bibliography{ref}
+\addbibresource{ref.bib}
+\usepackage{url}
+\usepackage{float}
+%indenting
+\usepackage{indentfirst}
+%comments
+\usepackage{comment}
+%table of contents
+\usepackage{blindtext}
+\AtBeginBibliography{\def\UrlFont{\color{black}}}
+%for pseudocode
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+%tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+%Title
+\newcommand{\titleOfThesisOne}{Image Library with VGA Output Using Cyclone IV}
+\newcommand{\typeOfThesis}{Bachelor Thesis}
+\newcommand{\authorOfThesis}{Shehab Hesham Hussein Mohamed}
+\newcommand{\supervisorOne}{Dr. Moheb Saad Zaghloul Mekhail}
+\newcommand{\supervisorTwo}{Supervisor 2}
+\newcommand{\supervisorThree}{Supervisor 3}
+\newcommand{\submissionDate}{18/01/2024}
+%Title
+
+\begin{document}
+
+\begin{comment}
+\begin{tikzpicture}[remember picture,overlay][H]
+   \node[anchor=north west,inner sep=0pt] at (current page.north west)
+              {\includegraphics[scale=0.5]{GIUlogo.jpeg}};
+\end{tikzpicture}
+\end{comment}
+\hypersetup{linkcolor=black} %to remove hyperlinks
+
+% Title page
+\input{Titlepage}
+\cleardoublepage % Ensures the next content starts on an odd-numbered page
+
+% Abstract
+%\section{Abstract}
+\input{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+%\addcontentsline{toc}{section}{Abstract}
+\cleardoublepage
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{Table of Contents}
+\cleardoublepage
+
+% List of figures, tables, algorithms, and table of contents
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\listofalgorithms
+\addcontentsline{toc}{chapter}{List of Algorithms}
+
+\input{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+\cleardoublepage
+
+% Chapters
+\chapter{Introduction}
+\input{Introduction}
+\cleardoublepage
+
+\chapter{Literature Review}
+\input{Literature Review}
+\cleardoublepage
+
+\chapter{Methodology}
+\input{Methodology}
+\cleardoublepage
+
+\chapter{Results}
+\input{Results}
+\cleardoublepage
+
+\chapter{Conclusion}
+\input{Conclusion}
+\cleardoublepage
+% Bibliography
+%\chapter{Bibliography}
+%\nocite{*}
+%\printbibliography
+\printbibliography[heading=bibintoc]
+%\input{ref.bib}
+\cleardoublepage
+\end{document}
