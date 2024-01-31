@@ -1,0 +1,192 @@
+%{
+	Created by Shehab Hesham.
+%}
+
+%Discussion
+%\section{Research Question  Re-Statement}
+\section{Summary}
+\par Although this thesis is titled, \textit{Image library with VGA Output Using Cyclone IV}, this thesis focuses on the MAX10 FPGA mounted on the DE10-Lite Board. The reason behind this shift is the unavailability of the Cyclone IV FPGA in the German International University. However, the DE10-Lite Board provided by Terasic has a MAX10 FPGA by Intel (Altera, formerly) mounted on it and was made available for this thesis. \newline
+\par The focus of this thesis was to design a system that manipulates input images as necessary, with the focus of helping medical professionals analyze and diagnose medical scans and images faster, leading to a better patient experience and a possible life saving treatment. \newline
+\par According to \cite{MRI}, \cite{CT}, and \cite{DEXA}, a medical professional requires on average 90, 60, or 30 minutes to diagnose and analyze a scan of a patient's MRI, CT, or DEXA respectively. This is mainly caused by visibility complications that a professional needs to work around; hence, this design saves relatively crucial amounts of time, money, and resources. \newline
+\par Therefore, the image processing algorithms are being chosen and tailored specifically for medical purposes. \newline
+\par Simply, this design is divided into 2 main sections based on the language they were designed in. A Python script and a Verilog HDL design. \newline
+\par The first section is coded in python, and is responsible for taking an image in the default image format and outputs	3 different hex files; namely, Red.hex, Green.hex, and Blue.hex, representing the three color channels Red, Green, and Blue, respectively. \newline
+\par The second section of the code is the Verilog HDL implementation of image processing and VGA controller. The first module is the one responsible for saving the 3 hex files into memory arrays and then outputting 8 bits at a time per color channel. The output of this module is fed to the image processing module that manipulates the 3 color channels' bits according to the hardware switches configuration. Lastly, the outputs from the image processing module is sent to a module responsible for clipping the 8 bit channels into 4 bit channels by disregarding the 4 least significant bits and passing the 4 bit each color channels to the corresponding hardware ports in the VGA hardware. In parallel, the VGA controller module is counting the horizontal and vertical positions of the pixel being displayed, this module is also responsible for bringing the system to a halt when a blanking region is due. Moreover, the VGA controller module is responsible for generating the horizontal and vertical synchronization signals passed to the VGA hardware. \newline
+\par All codes can be found on this GitHub Repository: \cite{fpgaipvgarepo} \newline
+\section{Results Discussions}
+
+\subsubsection{Analysis \& Synthesis}
+\par One of the aims of this thesis was tp utilize resources as much as possible. To analyze the extent of resource utilization, Quartus Prime offers a Synthesis and Analysis report upon compilation of the design. \newline
+\par The following table provides a glimpse of the analysis and synthesis report. \newline
+
+\begin{table}[H]
+	\centering
+	\caption{Analysis \& Synthesis Summary}
+	\begin{tabular}{ll}
+		\toprule
+		\textbf{Property} & \textbf{Value} \\
+		\midrule
+		Analysis \& Synthesis Status & Successful - Fri Jan 05 15:29:36 2024 \\
+		Quartus Prime Version & 17.0.0 Build 595 04/25/2017 SJ Lite Edition \\
+		Revision Name & memory \\
+		Top-level Entity Name & hardware \\
+		Family & MAX 10 \\
+		Total logic elements & 34 \\
+		Total registers & 23 \\
+		Total pins & 185 \\
+		Total virtual pins & 0 \\
+		Total memory bits & 0 \\
+		Embedded Multiplier 9-bit elements & 0 \\
+		Total PLLs & 0 \\
+		UFM blocks & 0 \\
+		ADC blocks & 0 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+
+\subsection{Fitter Summary}
+\par After viewing the resources required by the system, a designer should make sure that the development board or choice has enough resources to allow the correct implementation of the system. \newline
+\par The below table shows the resources rrequired by the system in comparison with the available resources of the FPGA. \newline
+
+\begin{table}[H]
+	\centering
+	\caption{Fitter Summary}
+	\begin{tabular}{|l|l|}
+		\hline
+		\textbf{Property} & \textbf{Value} \\
+		\hline
+		Fitter Status & Successful - Fri Jan 05 15:29:50 2024 \\
+		Quartus Prime Version & 17.0.0 Build 595 04/25/2017 SJ Lite Edition \\
+		Revision Name & memory \\
+		Top-level Entity Name & hardware \\
+		Family & MAX 10 \\
+		Device & 10M50DAF484C6GES \\
+		Timing Models & Preliminary \\
+		Total logic elements & 35 / 49,760 ( $<$ 1\% ) \\
+		Total registers & 23 \\
+		Total pins & 185 / 360 ( 51\% ) \\
+		Total virtual pins & 0 \\
+		Total memory bits & 0 / 1,677,312 ( 0\% ) \\
+		Embedded Multiplier 9-bit elements & 0 / 288 ( 0\% ) \\
+		Total PLLs & 0 / 4 ( 0\% ) \\
+		UFM blocks & 0 / 1 ( 0\% ) \\
+		ADC blocks & 0 / 2 ( 0\% ) \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\subsection{TimeQuest Timing Analyzer}
+\par The TimeQuest Timing Analyzer is a feature provided by Quartus Prime to keep track of the design's clocks', inputs', and outputs' timing constraints and the maximum allowed delay. This sets the system's operating frequency and general synchronization. \newline
+
+\begin{comment}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=10cm, height=7cm]{timequest clocks.png}
+		\caption{ Clock Details in TimeQuest Timing Analyzer }
+		\label{fig:discussionclocks}  
+	\end{figure}
+\end{comment}
+
+\begin{table}[H]
+	\centering
+	\caption{Clock details in TimeQuest Timing Analyzer}
+	\begin{tabularx}{0.75\linewidth}{lcccccc}
+		\toprule
+		\textbf{Clock Name} & \textbf{Type} & \textbf{Period (ns)} & \textbf{Frequency (MHz)} & \textbf{Rise (ns)} & \textbf{Fall (ns)} \\
+		\midrule
+		clock\_twenty\_five & Base & 40.000 & 25.0 & 0.000 & 20.000 \\
+		MAX10\_CLK1\_50 & Base & 20.000 & 50.0 & 0.000 & 10.000 \\
+		\bottomrule
+	\end{tabularx}
+\end{table}
+
+\section{Design Limitations}
+\subsection{Performance}
+\par Starting the first pixel being written to the memory until the same one is given as output from the system, a couple of clock cycles are required. This is due to the design architecture, each module contains an always block that is sensitive to the positive edge of the clock. Therefore, any change to a signal that happens on a clock cycle is detectable to other signals only on the clock cycle after the corresponding change. \newline
+\par The figure below shows the flow of the first few red color channel pixels starting the reading process from the memory arrays happening at approximately 1 ps (after writing) until the pixel is given as output from the clipping module to the VGA at approximately 9 ps. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{delay limitation.png}
+	\caption{ Red Pixels Journey Starting Reading from Memory Array Until Outputting to VGA }
+	\label{fig:limitationdelay}  
+\end{figure}
+
+\par As seen in the figure above, the first pixel to reach the output of the display module that sends the pixel data to the VGA controller requires 9 picoseconds (ps) to completely finish the process of being written into the memory array, reading and outputting from the memory array, going through image processing, and then clipped and given as output to the VGA port.  \newline
+
+\subsection{Image Size}
+\par This thesis has only considered images of size 640*480 in 16 colors. However, this is not the only image size, nor color configuration compatible with the VGA standards. \newline
+\par Some standard image formats suitable for VGA are: \newline
+
+\begin{description}
+	\item 640 × 480 in 16 colors or monochrome (This Thesis).
+	\item 640 × 350 in 16 colors or monochrome. 
+	\item 640 × 200 in 16 colors or monochrome.
+	\item 320 × 200 in 256 colors.
+	\item 320 × 200 in 4 or 16 colors.
+\end{description}
+
+\subsection{Hardware Configuration of VGA}
+\par The DE10-Lite board's featured VGA port is connected to an R-2R Digital-to-Analog Converter (DAC). However, the featured R-2R Digital-to-Analog Converter is a 4 bit converter; therefore, the image pixel data had to be clipped to 4 bits instead of the original 8, causing loss of color accuracy.  \newline
+
+\subsection{Unconstrained Inputs/Outputs}
+\par Although the clocks are constrained and legal, there are some input and output ports that are not constrained. There are 2 constraint files (.sdc) files in the system; however, the input and output ports are yet to be correctly constrained. The unconstrained paths list summary below shows the above mentioned data. \newline
+
+\begin{table}[H]
+	\centering
+	\caption{Timing Analysis Results}
+	\begin{tabular}{lcc}
+		\toprule
+		\textbf{Property} & \textbf{Hold} & \textbf{Setup} \\
+		\midrule
+		Illegal Clocks & 0 & 0 \\
+		Unconstrained Clocks & 0 & 0 \\
+		Unconstrained Input Port Paths & 22 & 22 \\
+		Unconstrained Input Ports & 1 & 1 \\
+		Unconstrained Output Port Paths & 2 & 2 \\
+		Unconstrained Output Ports & 2 & 2 \\
+		\bottomrule
+	\end{tabular}
+\end{table}
+\subsection{Color Channel}
+\par This system has 3 color channel outputs; red, green, and blue. All three color channels have similar behavior, when observed on an oscilloscope. Therefore, only the red color channel is shown. \newline
+\par The colors are only active during the active region of the VGA frame, which is when the horizontal counter is less than 640 and the vertical counter is less than 480. Although the vertical and horizontal counters are not visible on the oscilloscope, the horizontal synchronization signal can be used as reference. \newline
+\par The active region of the VGA frame is characterized by a high horizontal synchronization signal throughout the whole frame; therefore, the red color channel output signal is observed with respect to the Horizontal Synchronization pulse, in order to determine the correct functionality of the VGA controller. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{osc_redvshsync.jpeg}
+	\caption{ Red Color Channel in Respect to HSYNC (Expected) }
+	\label{fig:osccolor}  
+\end{figure}
+
+\par The color channel takes most of the horizontal synchronization active region pulse, the rest belongs to the blanking region's horizontal front porch and horizontal back porch; which consist of 16 and 48 clock cycles, respectively. \newline
+\par During the blanking region, that consists of the front porch, synchronization pulse, and the back porch, the color channels are forced to 0. Although this is not what is visible in the oscilloscope figure above, this is only due to the present, interfering noise. The visible vibrations and oscillations are caused by the noise in one, two, or all of the following: the VGA port output, the oscilloscope, or the probe connecting the VGA port to the oscilloscope. \newline
+\par A limitation to this design is that the color channes output noise during the full frame; although the simulation is correct. \newline
+
+\section{Future Research Recommendations}
+\subsection{Parallelism}
+\par Although all operations are done in parallel - for example, all 3 color channels are written, manipulated, and outputted at the same time - the pixels within a color channel in itself are manipulated sequentially, one after the other. As shown in the figure below, each process is dealing with 1 pixel at a time, all three color channels of that pixel. \newline
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=10cm, height=7cm]{Bit by Bit.png}
+	\caption{ Flow of each pixel through the system. }
+	\label{fig:BitbyBit}  
+\end{figure}
+
+\par It is recommended to improve the design, in order to be capable of manipulating more than one pixel at a time. \newline
+
+\subsection{Image Size Variation}
+\par As seen in the Limitations section, there are different VGA standards for different image sizes, with this thesis focusing on the first on the list. \newline
+\par It is preferable to create an adaptive system that works for all image sizes, this will ensure that the system is compatible with the various medical imaging equipment available in the market.  \newline
+
+\subsection{Image Processing Algorithms}
+\par Until this point in time, 4 image processing algorithms have been designed. Although the implemented algorithms serve the main purpose of the design, more image processing algorithms are possible to implement and will serve the purpose on a possibly wider scale. \newline
+\par The image processing module's handling of the switch inputs enables adding more image processing algorithms. Instead of only having 11 possible cases only, there are 1024 possible cases, each case implementing an image processing algorithm. \newline
+
+\subsection{Upgrade Hardware}
+\par To avoid the need to clip the color channel pixel values, a more advanced and sophisticated board should be considered. The DE10-Lite board provided by Terasic has many features and resources, but only supports the 640*480 in 16 colors or monochrome VGA standard. To gain more image quality and not have to clip the image pixel values, other development boards with more powerful resources should be considered. \newline
+
+\subsection{Color Channels}
+\par It is necessary to resolve the lack  of output from the color channel pins from the VGA port. One future possibility is to further study the output and reach a result similar to ~\ref{fig:osccolor} on page ~\pageref{fig:osccolor}. \newline
